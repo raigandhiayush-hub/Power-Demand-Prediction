@@ -101,11 +101,11 @@ eco = pd.read_csv('economic_full_1.csv')                # Economic indicators
 ### 3. Feature Engineering
 
 Several columns are dropped (granular generation sources, weather variables with high correlation/low predictive value, or columns already encoded via lags).
-####Grid Data:
+#### Grid Data:
 The features remarks (as if in reality there is a spike, it'd be displayed in the demand_mw so its like a duplicate), coal, gas, solar, wind, liquid_fuel, hydro, india_tripura, india_adani, nepal have been dropped as the nature of the supplied energy doesn't matter but the quantity does.
-####Weather Data:
+#### Weather Data:
 The features temperature_2m (°C) (as the apparent temperature takes it into accounting (along with humidity, but humidity has role to play in human behaviour as well as grid heating)), wind_direction_10m (°) (as it doesn't affect the demand of power much), cloud_cover (%) (as its effect has been covered by sunshine with a negative covariance) have been dropped.
-####Economic Data:
+#### Economic Data:
 Inflation, consumer prices (annual %), Energy use (kg of oil equivalent per capita), Population, total, GDP growth (annual %), Energy intensity level of primary energy (MJ/$2021 PPP GDP) only have been used as the others are just noise or have a strong correlation with these features.
 
 New features created:
