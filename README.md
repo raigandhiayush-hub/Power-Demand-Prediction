@@ -76,7 +76,7 @@ eco = pd.read_csv('economic_full_1.csv')                # Economic indicators
 
 **Grid Data (`df`):**
 - Datetime index is rounded to the nearest hour and deduplicated.
-- Missing values for import sources (`india_adani`, `nepal`) and renewables (`solar`, `wind`) are filled with `0` (indicating no generation/import).
+- Missing values for import sources (`india_adani`, `nepal`) and renewables (`solar`, `wind`) are filled with `0` (indicating time before setup of the plants).
 - **Outlier detection** uses the Modified Z-Score method (robust to skewed distributions): values with |modified Z| > 3 are flagged and replaced via linear interpolation, followed by forward/backward fill.
 
 **Weather Data (`wea`):**
@@ -101,6 +101,12 @@ eco = pd.read_csv('economic_full_1.csv')                # Economic indicators
 ### 3. Feature Engineering
 
 Several columns are dropped (granular generation sources, weather variables with high correlation/low predictive value, or columns already encoded via lags).
+####Grid Data:
+The features remarks (as if in reality there is a spike, it'd be displayed in the demand_mw so its like a duplicate), coal, gas, solar, wind, liquid_fuel, hydro, india_tripura, india_adani, nepal have been dropped as the nature of the supplied energy doesn't matter but the quantity does.
+####Weather Data:
+The features temperature_2m (°C) (as the apparent temperature takes it into accounting (along with humidity, but humidity has role to play in human behaviour as well as grid heating)), wind_direction_10m (°) (as it doesn't affect the demand of power much), cloud_cover (%) (as its effect has been covered by sunshine with a negative covariance) have been dropped.
+####Economic Data:
+Inflation, consumer prices (annual %), Energy use (kg of oil equivalent per capita), Population, total, GDP growth (annual %), Energy intensity level of primary energy (MJ/$2021 PPP GDP) only have been used as the others are just noise or have a strong correlation with these features.
 
 New features created:
 
@@ -121,6 +127,9 @@ New features created:
 | `is_peak_hour` | 1 if hour is in {10, 11, 12, 18, 19, 20} |
 | `target` | **Next-hour demand (MW)** — prediction target |
 
+-The sin and cosine features of hour, month and weekday are to show the cirular nature of these features.
+-The lag features of lag_1, lag_24, lag_168 created to use the demand of last hour, day and week as feature to train the model.
+-The rolling means and deviations used to show the trend and smoothen the noise in the data in last 1 day.
 > All lag and rolling features use `.shift(1)` to prevent data leakage. Rows with any remaining NaN values are dropped.
 
 The processed dataset is saved to `data_final.xlsx`.
